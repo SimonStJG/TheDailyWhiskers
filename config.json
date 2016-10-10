@@ -1,0 +1,10 @@
+{
+  "recipients": [
+    "Lord Fido of Tunatown <Lord.Fido@Tunatown.thisisafakeemail>"
+  ],
+  "mailgun": {
+    "url": "<your URL here>",
+    "api-key": "key-<Your key here>",
+    "from_address": "The Daily Whiskers <mailgun@yourdomainhere>"
+  }
+}

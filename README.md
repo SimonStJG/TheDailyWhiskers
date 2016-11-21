@@ -3,23 +3,17 @@ Daily Whiskers
 
 Emails you (or unsuspecting others) silly pictures of cats with made up names.
 
-Names made up by secret algorithm and cats pics from reddit's /r/cats.
+Names made up by ~~secret~~ algorithm and cats pics from reddit's /r/cats.
 
 # Setup instructions #
 
-## Deploy ##
+## Requirements ##
 
-On the server, create a new git repo.  Then, to allow pushing to a checked out branch, run
+The emailing is done with [mailgun](http://www.mailgun.com/), so you'll need an account.  Accounts are free though :) 
 
-```
-git config receive.denyCurrentBranch ignore
-```
+## Setup ##
 
-Symlink the post-receive hook.
-
-```ln -s <repo_dir>/git-hooks/post-receive <repo_dir>/.git/hooks/post-receive```
-
-This post-receive hook is set up to checkout the ```production``` branch.
+Update ```config.json``` with your mailgun info and a list of recipients.
 
 ## Run ##
 
@@ -34,3 +28,14 @@ Run it, eg. with cron:
 ## Testing ##
 
 ```python3 -m pytest test```
+
+## Deploy ##
+
+On the server, create a new git repo, add add this as a remote.  Then, to allow pushing to a checked out branch, run
+```git config receive.denyCurrentBranch ignore``` from your server.  
+
+Symlink the post-receive hook.
+
+```ln -s <repo_dir>/git-hooks/post-receive <repo_dir>/.git/hooks/post-receive```
+
+This post-receive hook is set up to checkout the ```production``` branch whenever it is pushed to.

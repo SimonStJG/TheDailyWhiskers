@@ -1,6 +1,5 @@
 import pytest
 import random
-import requests
 
 from unittest.mock import call, mock_open, Mock
 
@@ -35,11 +34,12 @@ def test_mainline(mock_requests, cat_picture, mailgun_config):
     ]
     
     assert mock_requests.get.mock_calls == [
-        call('https://www.reddit.com/r/cats.json', headers={'user-agent': 'TheDailyWhiskersxxxxxx'}),
-        call('https://i.redditmedia.com/mpz8tWV7HY4vJYyLf6bQu3kmCyj66j6aX4sTNle9sZo.jpg?fit=crop&crop=faces%2Centropy&arh=2&w=216&s=b154b7cfb69c4fb8a349588a2bb84604', 
-            headers={'user-agent': 'TheDailyWhiskersxxxxxx'}),
-        call('https://i.redditmedia.com/Y6OCSvEsg3ELDK-O600sVhuZ4S7Ke_QnhIkPR-ZxcGw.jpg?fit=crop&crop=faces%2Centropy&arh=2&w=216&s=6a7ccc26a3c5a9bdf16a0325ea87cf46', 
-            headers={'user-agent': 'TheDailyWhiskersxxxxxx'})
+        call('https://www.reddit.com/r/cats/search.json?q=flair%3A%27default%27&restrict_sr=on&sort=top&t=day',
+             headers={'user-agent': 'TheDailyWhiskersxxxxxx'}),
+        call('https://i.redditmedia.com/vvovx9NCEv2KMxvRNI4B23PwCjAeAWehBYEiYmVhJ10.jpg?fit=crop&crop=faces%2Centropy&arh=2&w=216&s=e57e5b7130c7106b69b6eee3fc96727d',
+             headers={'user-agent': 'TheDailyWhiskersxxxxxx'}),
+        call('https://i.redditmedia.com/kIBDAr-elW5spIt8b8k06wdV-m7eLKempC9sLq6ZFLk.jpg?fit=crop&crop=faces%2Centropy&arh=2&w=216&s=9c0301fb3966b21c7a50eac5a1a292eb',
+             headers={'user-agent': 'TheDailyWhiskersxxxxxx'})
     ]
 
 @pytest.fixture(autouse=True)
@@ -53,7 +53,7 @@ def mock_requests(cat_picture, sample_cats_json):
             mock.headers = {"Content-Type": content_type}
             return mock
 
-        if url == "https://www.reddit.com/r/cats.json":
+        if "reddit.com/r/cats/search.json" in url:
             return build_mock_response(sample_cats_json, "application/json")
         elif "https://i.redditmedia.com" in url:
             return build_mock_response(*cat_picture)
@@ -98,7 +98,7 @@ def cat_picture():
 
 @pytest.fixture(scope="session")
 def sample_cats_json():
-    with open("test/sample.cats.json") as f:
+    with open("test/samplecatsearch.json") as f:
         return bytes(f.read().encode("UTF-8"))
 
 @pytest.fixture(autouse=True)

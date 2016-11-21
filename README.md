@@ -9,17 +9,17 @@ Names made up by secret algorithm and cats pics from reddit's /r/cats.
 
 ## Deploy ##
 
-On the server, create a new git repo with
+On the server, create a new git repo.  Then, to allow pushing to a checked out branch, run
 
-```git init```
-
-Then, to allow pushing to a checked out branch, run 
-
-```git config receive.denyCurrentBranch ignore```
+```
+git config receive.denyCurrentBranch ignore
+```
 
 Symlink the post-receive hook.
 
 ```ln -s <repo_dir>/git-hooks/post-receive <repo_dir>/.git/hooks/post-receive```
+
+This post-receive hook is set up to checkout the ```production``` branch.
 
 ## Run ##
 

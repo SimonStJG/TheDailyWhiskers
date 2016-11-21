@@ -32,6 +32,8 @@ last_names = [
     "the shrew killer", "the salmon shredder", "the vomiter"]
 
 MailgunConfig = namedtuple("MailgunConfig", ["url", "api_key", "from_address"])
+CatPicture = namedtuple("CatPicture", ["content", "content_type", "reddit_url"])
+
 
 def parse_config(filename):
     raw = json.load(open(filename))
@@ -68,20 +70,28 @@ def get_url(url, **kwargs):
     response.raise_for_status()
     return response
 
-def cat_picture(reddit_json):
+def get_cat_picture(reddit_json):
     # 1 because 0 is very low res.
     url = reddit_json["data"]["preview"]["images"][0]["resolutions"][1]["url"]
     # For a reason known only to the API designer, this is necessary
     url = url.replace("&amp;", "&")
+
+    reddit_url = "https://www.reddit.com" + reddit_json["data"]["permalink"]
+
     #  Without the headers, reddit gets very throttle-y.
     response = get_url(url, headers={"user-agent": generate_random_user_agent()})
-    return (response.content, response.headers["Content-Type"])
+    return CatPicture(content=response.content,
+                      content_type=response.headers["Content-Type"],
+                      reddit_url=reddit_url)
 
-def build_html(cat_name, image_file):
+def build_html(cat_name, image_file, reddit_url):
     return """
-    <h1 style="text-align: center;">{}</h1>
-    <img style="display: block; margin: auto; width: 100%;" src="cid:{}">
-    """.format(cat_name, image_file).strip()
+    <h1 style="text-align: center;">{cat_name}</h1>
+    <img style="display: block; margin: auto; width: 100%;" src="cid:{image_file}">
+    <p><small>Credit: <a href="{reddit_url}">{reddit_url}</a></small></p>
+    """.format(cat_name=cat_name,
+               image_file=image_file,
+               reddit_url=reddit_url).strip()
 
 def main():
     (recipients, mailgun_config) = parse_config(config_file)
@@ -99,7 +109,7 @@ def main():
         raise Exception("Unexpected respone: {}".format(reddit_json), e)
     for i, recipient in enumerate(recipients):
         # + 1 because sometimes weird posts are stickied at the top
-        (image_content, image_content_type) = cat_picture(children[i + 1])
+        cat_picture = get_cat_picture(children[i + 1])
         cat_name = get_cat_name()
 
         # I have a feeling this random string will solve Jess's iPhone issue where
@@ -107,10 +117,10 @@ def main():
         cat_pic_name = "cat_pic" + generate_random_string()
         send(mailgun_config=mailgun_config,
              to=recipient,
-             html=build_html(cat_name, cat_pic_name),
+             html=build_html(cat_name, cat_pic_name, cat_picture.reddit_url),
              image_name=cat_pic_name,
-             image_content=image_content,
-             image_content_type=image_content_type)
+             image_content=cat_picture.content,
+             image_content_type=cat_picture.content_type)
 
 if __name__ == "__main__":
     main()

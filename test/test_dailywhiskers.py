@@ -12,7 +12,9 @@ def test_mainline(mock_requests, cat_picture, mailgun_config):
         call(mailgun_config.url, 
             auth=('api', mailgun_config.api_key), 
             data={
-                'html': '<h1 style="text-align: center;">dr fluffington of tunatown</h1>\n    <img style="display: block; margin: auto; width: 100%;" src="cid:cat_picxxxxxx">', 
+                'html': '<h1 style="text-align: center;">dr fluffington of tunatown</h1>\n    '
+                        '<img style="display: block; margin: auto; width: 100%;" src="cid:cat_picxxxxxx">\n    '
+                        '<p><small>Credit: <a href="https://www.reddit.com/r/cats/comments/5dy3yg/this_cutie_has_a_new_home/?ref=search_posts">https://www.reddit.com/r/cats/comments/5dy3yg/this_cutie_has_a_new_home/?ref=search_posts</a></small></p>',
                 'subject': 'The Daily Whiskers',
                 'from': mailgun_config.from_address, 
                 'to': 'test_recipient1'
@@ -23,7 +25,9 @@ def test_mainline(mock_requests, cat_picture, mailgun_config):
         call(mailgun_config.url, 
             auth=('api', mailgun_config.api_key), 
             data={
-                'html': '<h1 style="text-align: center;">dr fluffington of tunatown</h1>\n    <img style="display: block; margin: auto; width: 100%;" src="cid:cat_picxxxxxx">', 
+                'html': '<h1 style="text-align: center;">dr fluffington of tunatown</h1>\n    '
+                        '<img style="display: block; margin: auto; width: 100%;" src="cid:cat_picxxxxxx">\n    '
+                        '<p><small>Credit: <a href="https://www.reddit.com/r/cats/comments/5dzdva/reddit_meet_lemi_my_brother_found_him_floating_in/?ref=search_posts">https://www.reddit.com/r/cats/comments/5dzdva/reddit_meet_lemi_my_brother_found_him_floating_in/?ref=search_posts</a></small></p>',
                 'subject': 'The Daily Whiskers',
                 'from': mailgun_config.from_address, 
                 'to': 'test_recipient2'

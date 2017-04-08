@@ -39,3 +39,10 @@ Symlink the post-receive hook.
 ```ln -s <repo_dir>/git-hooks/post-receive <repo_dir>/.git/hooks/post-receive```
 
 This post-receive hook is set up to checkout the ```production``` branch whenever it is pushed to.
+
+On your laptop, add the repo as a remote:
+```
+git remote add prod <username>@<ip>:/home/<username>/dailywhiskers
+git fetch prod
+```
+

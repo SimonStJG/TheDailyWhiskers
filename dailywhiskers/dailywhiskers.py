@@ -7,8 +7,13 @@ import string
 from collections import namedtuple
 from os import path
 
+import logging
 import requests
+import sys
 
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format='%(asctime)s;%(levelname)s;%(message)s')
 config_file = path.join(path.dirname(path.dirname(__file__)), "config.json")
 
 titles = [
@@ -38,12 +43,12 @@ CatPicture = namedtuple("CatPicture", ["content", "content_type", "reddit_url"])
 def parse_config(filename):
     raw = json.load(open(filename))
     recipients = raw["recipients"]
-    assert type(recipients) == list  # I miss langages which handle types properly.
+    assert type(recipients) == list  # I miss languages which handle types properly.
     raw_mailgun = raw["mailgun"]
     mailgun_config = MailgunConfig(url=raw_mailgun["url"],
                                    api_key=raw_mailgun["api-key"],
                                    from_address=raw_mailgun["from_address"])
-    return (recipients, mailgun_config)
+    return recipients, mailgun_config
 
 def generate_random_string(length=6):
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
@@ -94,6 +99,7 @@ def build_html(cat_name, image_file, reddit_url):
                reddit_url=reddit_url).strip()
 
 def main():
+    logging.info("dailywhiskers started")
     (recipients, mailgun_config) = parse_config(config_file)
     reddit_json = json.loads(get_url(
         # With HTTP, reddit will respond with a 302 to the HTTPS version.
@@ -102,19 +108,26 @@ def main():
         # sort=top&t=day picks the top submissions for the last day.
         "https://www.reddit.com/r/cats/search.json?q=flair%3A%27default%27&restrict_sr=on&sort=top&t=day",
         headers={"user-agent": generate_random_user_agent()}).content.decode("UTF-8"))
-
     try:
         children = reddit_json["data"]["children"]
     except KeyError as e:
-        raise Exception("Unexpected respone: {}".format(reddit_json), e)
+        raise Exception("Unexpected response: {}".format(reddit_json), e)
     for i, recipient in enumerate(recipients):
         # + 1 because sometimes weird posts are stickied at the top
-        cat_picture = get_cat_picture(children[i + 1])
+        try:
+            cat_picture = get_cat_picture(children[i + 1])
+        except (KeyError, IndexError):
+            logging.debug("Failed to get cat pic from JSON, which was: \n{}".format(reddit_json))
+            raise
+
         cat_name = get_cat_name()
 
-        # I have a feeling this random string will solve Jess's iPhone issue where
-        # new pictures clobber old ones.  Need to test.
+        # This random string solves Jess's iPhone issue where new pictures clobber old ones.
         cat_pic_name = "cat_pic" + generate_random_string()
+
+        logging.info("Sending cat pic {} with name {} to {}".format(cat_picture.reddit_url,
+                                                                    cat_pic_name,
+                                                                    recipient))
         send(mailgun_config=mailgun_config,
              to=recipient,
              html=build_html(cat_name, cat_pic_name, cat_picture.reddit_url),
@@ -123,4 +136,7 @@ def main():
              image_content_type=cat_picture.content_type)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        logging.exception("DailyWhiskers failed.")

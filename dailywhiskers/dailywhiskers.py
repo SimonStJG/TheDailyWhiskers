@@ -103,10 +103,11 @@ def main():
     (recipients, mailgun_config) = parse_config(config_file)
     reddit_json = json.loads(get_url(
         # With HTTP, reddit will respond with a 302 to the HTTPS version.
-        # flair='default' only shows pics (ie. no mourning, no questions, etc).
+        # flair='' only shows pics (ie. no mourning, no questions, etc).
+        #   This used to be flair='default', changed for some reason.
         # restrict_sr=on restricts to the r/cats subreddit.
         # sort=top&t=day picks the top submissions for the last day.
-        "https://www.reddit.com/r/cats/search.json?q=flair%3A%27default%27&restrict_sr=on&sort=top&t=day",
+        "https://www.reddit.com/r/cats/search.json?q=flair%3A%27%27&restrict_sr=on&sort=top&t=day",
         headers={"user-agent": generate_random_user_agent()}).content.decode("UTF-8"))
     try:
         children = reddit_json["data"]["children"]

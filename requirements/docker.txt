@@ -1,0 +1,4 @@
+-r prod.txt
+
+schedule >= 0.4.3
+prometheus_client == 0.0.20

@@ -141,3 +141,4 @@ if __name__ == "__main__":
         main()
     except Exception:
         logging.exception("DailyWhiskers failed.")
+        raise

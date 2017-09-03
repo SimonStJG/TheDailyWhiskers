@@ -9,36 +9,36 @@ def test_mainline(mock_requests, cat_picture, mailgun_config):
 
     dailywhiskers.main()
     assert mock_requests.post.mock_calls == [
-        call(mailgun_config.url, 
-            auth=('api', mailgun_config.api_key), 
+        call(mailgun_config.url,
+            auth=('api', mailgun_config.api_key),
             data={
                 'html': '<h1 style="text-align: center;">dr fluffington of tunatown</h1>\n    '
                         '<img style="display: block; margin: auto; width: 100%;" src="cid:cat_picxxxxxx">\n    '
                         '<p><small>Credit: <a href="https://www.reddit.com/r/cats/comments/5dy3yg/this_cutie_has_a_new_home/?ref=search_posts">https://www.reddit.com/r/cats/comments/5dy3yg/this_cutie_has_a_new_home/?ref=search_posts</a></small></p>',
                 'subject': 'The Daily Whiskers',
-                'from': mailgun_config.from_address, 
+                'from': mailgun_config.from_address,
                 'to': 'test_recipient1'
-            }, 
+            },
             files=[("inline", ("cat_picxxxxxx", *cat_picture))]
         ),
         call().raise_for_status(),
-        call(mailgun_config.url, 
-            auth=('api', mailgun_config.api_key), 
+        call(mailgun_config.url,
+            auth=('api', mailgun_config.api_key),
             data={
                 'html': '<h1 style="text-align: center;">dr fluffington of tunatown</h1>\n    '
                         '<img style="display: block; margin: auto; width: 100%;" src="cid:cat_picxxxxxx">\n    '
                         '<p><small>Credit: <a href="https://www.reddit.com/r/cats/comments/5dzdva/reddit_meet_lemi_my_brother_found_him_floating_in/?ref=search_posts">https://www.reddit.com/r/cats/comments/5dzdva/reddit_meet_lemi_my_brother_found_him_floating_in/?ref=search_posts</a></small></p>',
                 'subject': 'The Daily Whiskers',
-                'from': mailgun_config.from_address, 
+                'from': mailgun_config.from_address,
                 'to': 'test_recipient2'
-            }, 
+            },
             files=[("inline", ("cat_picxxxxxx", *cat_picture))]
         ),
         call().raise_for_status(),
     ]
-    
+
     assert mock_requests.get.mock_calls == [
-        call('https://www.reddit.com/r/cats/search.json?q=flair%3A%27default%27&restrict_sr=on&sort=top&t=day',
+        call('https://www.reddit.com/r/cats/search.json?q=flair%3A%27%27&restrict_sr=on&sort=top&t=day',
              headers={'user-agent': 'TheDailyWhiskersxxxxxx'}),
         call('https://i.redditmedia.com/vvovx9NCEv2KMxvRNI4B23PwCjAeAWehBYEiYmVhJ10.jpg?fit=crop&crop=faces%2Centropy&arh=2&w=216&s=e57e5b7130c7106b69b6eee3fc96727d',
              headers={'user-agent': 'TheDailyWhiskersxxxxxx'}),
@@ -70,8 +70,8 @@ def mock_requests(cat_picture, sample_cats_json):
 
 @pytest.fixture()
 def mailgun_config():
-    return dailywhiskers.MailgunConfig(url="test_mailgun_url", 
-                                    api_key="test_mailgun_apikey", 
+    return dailywhiskers.MailgunConfig(url="test_mailgun_url",
+                                    api_key="test_mailgun_apikey",
                                     from_address="test_from_address")
 
 
@@ -108,4 +108,4 @@ def sample_cats_json():
 @pytest.fixture(autouse=True)
 def mock_random():
     dailywhiskers.generate_random_string = lambda length=6: "x" * length
-    dailywhiskers.random.choice = lambda l: l[0] 
+    dailywhiskers.random.choice = lambda l: l[0]

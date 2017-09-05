@@ -98,9 +98,7 @@ def build_html(cat_name, image_file, reddit_url):
                image_file=image_file,
                reddit_url=reddit_url).strip()
 
-def main():
-    logging.info("dailywhiskers started")
-    (recipients, mailgun_config) = parse_config(config_file)
+def retrieve_reddit_json(count=0):
     reddit_json = json.loads(get_url(
         # With HTTP, reddit will respond with a 302 to the HTTPS version.
         # flair='' only shows pics (ie. no mourning, no questions, etc).
@@ -109,10 +107,24 @@ def main():
         # sort=top&t=day picks the top submissions for the last day.
         "https://www.reddit.com/r/cats/search.json?q=flair%3A%27%27&restrict_sr=on&sort=top&t=day",
         headers={"user-agent": generate_random_user_agent()}).content.decode("UTF-8"))
-    try:
-        children = reddit_json["data"]["children"]
-    except KeyError as e:
-        raise Exception("Unexpected response: {}".format(reddit_json), e)
+
+    # Reddit seems to return empty results sometimes, for completely
+    # identical requests.  Maybe it's a bug, or maybe they don't want me
+    # scraping :(
+    if len(reddit_json['data']['children']) == 0:
+        if count >= 5:
+            raise Exception("Reddit returned empty data: {}".format(reddit_json))
+        else:
+            logging.warning("Reddit returned empty data, retrying: {}".format(reddit_json))
+            return retrieve_reddit_json(count + 1)
+    return reddit_json["data"]["children"]
+
+def main():
+    logging.info("dailywhiskers started")
+    (recipients, mailgun_config) = parse_config(config_file)
+
+    children = retrieve_reddit_json()
+
     for i, recipient in enumerate(recipients):
         # + 1 because sometimes weird posts are stickied at the top
         try:

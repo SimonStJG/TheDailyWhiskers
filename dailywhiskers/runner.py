@@ -11,9 +11,9 @@ fatal_errors = Counter('fatal_errors', 'Fatal Errors')
 @run_time.time()
 def tick():
   try:
-    with fatal_errors.count_exceptions():
-      main()
+    main()
   except Exception:
+    fatal_errors.inc()  
     pass
 
 

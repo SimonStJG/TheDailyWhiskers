@@ -105,7 +105,7 @@ def retrieve_reddit_json(count=0):
         #   This used to be flair='default', changed for some reason.
         # restrict_sr=on restricts to the r/cats subreddit.
         # sort=top&t=day picks the top submissions for the last day.
-        "https://www.reddit.com/r/cats/search.json?q=flair%3A%27%27&restrict_sr=on&sort=top&t=day",
+        "https://www.reddit.com/r/cats/search.json?q=flair%253A%27default%27&restrict_sr=on&sort=top&t=day",
         headers={"user-agent": generate_random_user_agent()}).content.decode("UTF-8"))
 
     # Reddit seems to return empty results sometimes, for completely

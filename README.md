@@ -23,7 +23,7 @@ Install the requirements with
 
 Run it, eg. with cron:
 
-``` 0 9  *   *   *     python3 /home/pi/dailywhiskers/cats.py >> /home/pi/dailywhiskers/cats.log 2>&1```
+``` 0 9  *   *   *     python3 /home/pi/dailywhiskers/dailywhiskers.py >> /home/pi/dailywhiskers/dailywhiskers.log 2>&1```
 
 ## Testing ##
 
@@ -36,7 +36,7 @@ On the server, create a new git repo, add add this as a remote.  Then, to allow 
 
 Symlink the post-receive hook.
 
-```ln -s <repo_dir>/git-hooks/post-receive <repo_dir>/.git/hooks/post-receive```
+```ln -s ./git-hooks/post-receive ./.git/hooks/post-receive```
 
 This post-receive hook is set up to checkout the ```production``` branch whenever it is pushed to.
 

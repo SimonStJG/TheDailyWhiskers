@@ -1,7 +1,11 @@
 __pycache__
+.pytest_cache
 *.pyc
 .cache
 *~
 *.log
 venv
 .idea
+.terraform
+target/
+virtualenv

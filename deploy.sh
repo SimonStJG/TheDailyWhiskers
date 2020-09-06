@@ -13,7 +13,7 @@ pip install -r requirements.txt
 
 zip "${TARGET}" dailywhiskers/*.py config.json
 
-pushd $VIRTUAL_ENV/lib/python3.5/site-packages
+pushd $VIRTUAL_ENV/lib/python3.6/site-packages
 zip -r "${TARGET}" .
 popd
 

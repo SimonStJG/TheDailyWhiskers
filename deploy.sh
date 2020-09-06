@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+rm -rf virtualenv
+python -m venv virtualenv
 source virtualenv/bin/activate
 
 set -euo pipefail

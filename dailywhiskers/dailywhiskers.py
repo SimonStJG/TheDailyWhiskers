@@ -89,7 +89,7 @@ def get_cat_picture(json_child):
     try:
         link_flair_text = json_child["data"]["link_flair_text"]
         if link_flair_text != "Cat Picture":
-            logger.debug("Wrong link_flair_text: {}".format(link_flair_text))
+            logger.debug("Wrong link_flair_text: %s", link_flair_text)
             return None
 
         # 1 because 0 is very low res.
@@ -105,7 +105,7 @@ def get_cat_picture(json_child):
                           content_type=response.headers["Content-Type"],
                           reddit_url=reddit_url)
     except (KeyError, IndexError):
-        logger.exception("Failed to get cat pic from JSON, which was: \n{}".format(json_child))
+        logger.exception("Failed to get cat pic from JSON, which was: \n%s", json_child)
         return None
 
 
@@ -138,15 +138,13 @@ def main():
     logger.debug("Loaded config")
 
     for recipient, cat_picture in zip(recipients, cat_pictures()):
-        logger.debug("Processing recipient: {}".format(recipient))
+        logger.debug("Processing recipient: %s", recipient)
         cat_name = get_cat_name()
 
         # This random string solves Jess's iPhone issue where new pictures clobber old ones.
         cat_pic_name = "cat_pic" + generate_random_string()
 
-        logger.info("Sending cat pic {} with name {} to {}".format(cat_picture.reddit_url,
-                                                                   cat_pic_name,
-                                                                   recipient))
+        logger.info("Sending cat pic %s with name %s to %s", cat_picture.reddit_url, cat_pic_name, recipient)
         send(mailgun_config=mailgun_config,
              to=recipient,
              html=build_html(cat_name, cat_pic_name, cat_picture.reddit_url),

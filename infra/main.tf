@@ -1,5 +1,5 @@
 terraform {
-  required_version = "0.11.7"
+  required_version = "~> 0.13.2"
 
   backend "s3" {
     bucket = "dailywhiskers-tfstate"
@@ -10,5 +10,5 @@ terraform {
 
 provider "aws" {
   region  = "eu-west-1"
-  version = "1.24"
+  version = "~> 3.5.0"
 }

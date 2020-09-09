@@ -1,10 +1,10 @@
 locals {
-  metric_name      = "ErrorCount"
-  metric_namespace = "DailyWhiskers"
+  metric_name      = "ErrorCount-${local.environment}"
+  metric_namespace = "DailyWhiskers-${local.environment}"
 }
 
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
-  name                = "dw-daily-trigger"
+  name                = "dw-${local.environment}-daily-trigger"
   schedule_expression = "cron(0 9 * * ? *))"
 }
 
@@ -14,7 +14,6 @@ resource "aws_cloudwatch_event_target" "daily_trigger" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {
-  # Name is determined by AWS, so must match the below
   name              = "/aws/lambda/${aws_lambda_function.service.function_name}"
   retention_in_days = 7
 }
@@ -33,7 +32,7 @@ resource "aws_cloudwatch_log_metric_filter" "errors" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "errors" {
-  alarm_name          = "DailyWhiskersError"
+  alarm_name          = "DailyWhiskersError-${local.environment}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   metric_name         = local.metric_name

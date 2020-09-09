@@ -9,3 +9,5 @@ venv
 .terraform
 target/
 virtualenv
+prod-config.json
+staging-config.json

@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "service" {
-  function_name = "dailywhiskers"
+  function_name = "dailywhiskers-${local.environment}"
   handler       = "dailywhiskers/dailywhiskers.handler"
   filename      = var.lambda_code_zip
   runtime       = "python3.6"

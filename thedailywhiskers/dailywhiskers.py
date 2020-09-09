@@ -1,16 +1,14 @@
+import boto3
 import json
+import os
 import random
 import string
 import logging
 import requests
 
 from collections import namedtuple
-from os import path
-
 
 logger = logging.getLogger()
-
-config_file = path.join(path.dirname(path.dirname(__file__)), "config.json")
 requests_timeout = 10
 
 titles = [
@@ -98,17 +96,21 @@ MailgunConfig = namedtuple("MailgunConfig", ["url", "api_key", "from_address"])
 CatPicture = namedtuple("CatPicture", ["url", "reddit_url"])
 
 
-def parse_config(filename):
-    raw = json.load(open(filename))
-    recipients = raw["recipients"]
-    assert type(recipients) == list
-    raw_mailgun = raw["mailgun"]
-    mailgun_config = MailgunConfig(
-        url=raw_mailgun["url"],
-        api_key=raw_mailgun["api-key"],
-        from_address=raw_mailgun["from_address"],
+def get_config():
+    config = json.loads(
+        boto3.session.Session()
+        .client(
+            service_name="secretsmanager",
+            region_name=os.environ["REGION_NAME"],
+        )
+        .get_secret_value(SecretId=os.environ["SECRET_NAME"])["SecretString"]
     )
-    return recipients, mailgun_config
+    mailgun_config = config["mailgun"]
+    return config["recipients"], MailgunConfig(
+        url=mailgun_config["url"],
+        api_key=mailgun_config["api-key"],
+        from_address=mailgun_config["from_address"],
+    )
 
 
 def generate_random_string(length=6):
@@ -198,7 +200,7 @@ def main():
     logger.setLevel(logging.DEBUG)
 
     logger.info("Dailywhiskers started")
-    (recipients, mailgun_config) = parse_config(config_file)
+    (recipients, mailgun_config) = get_config()
     logger.debug("Loaded config")
 
     session = requests.Session()

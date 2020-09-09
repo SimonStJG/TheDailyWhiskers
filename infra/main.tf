@@ -14,8 +14,10 @@ provider "aws" {
 }
 
 locals {
-  environment      = {
-    staging: "staging",
-    prod: "prod"
+  environment = {
+    staging : "staging",
+    prod : "prod"
   }[terraform.workspace]
 }
+
+data "aws_region" "current" {}

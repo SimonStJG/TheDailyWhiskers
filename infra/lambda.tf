@@ -1,6 +1,6 @@
 resource "aws_lambda_function" "service" {
   function_name = "dailywhiskers-${local.environment}"
-  handler       = "dailywhiskers/dailywhiskers.handler"
+  handler       = "thedailywhiskers/dailywhiskers.handler"
   filename      = var.lambda_code_zip
   runtime       = "python3.6"
   role          = aws_iam_role.service.arn

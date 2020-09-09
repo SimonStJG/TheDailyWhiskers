@@ -7,7 +7,6 @@ __pycache__
 venv
 .idea
 .terraform
-target/
-virtualenv
+*.egg_info
 prod-config.json
 staging-config.json

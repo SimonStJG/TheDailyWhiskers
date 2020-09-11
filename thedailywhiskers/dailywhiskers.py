@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import boto3
+import jinja2
 import json
 import os
 import random
@@ -185,23 +188,15 @@ def get_cat_pictures(top_cats):
             yield cat_picture
 
 
-def build_html(cat_name, image_file, reddit_url):
-    return """
-    <h1 style="text-align: center;">{cat_name}</h1>
-    <img style="display: block; margin: auto; width: 100%;" src="cid:{image_file}">
-    <p><small>Credit: <a href="{reddit_url}">{reddit_url}</a></small></p>
-    """.format(
-        cat_name=cat_name, image_file=image_file, reddit_url=reddit_url
-    ).strip()
-
-
 def main():
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
 
     logger.info("Dailywhiskers started")
     (recipients, mailgun_config) = get_config()
-    logger.debug("Loaded config")
+    template = jinja2.Template(
+        (Path(__file__).parent / "email_template.html").read_text("utf-8")
+    )
 
     session = requests.Session()
     # Without this reddit gets very throttle-y
@@ -233,7 +228,11 @@ def main():
         send(
             mailgun_config=mailgun_config,
             to=recipient,
-            html=build_html(cat_name, cat_pic_name, cat_picture.reddit_url),
+            html=template.render(
+                cat_name=cat_name,
+                image_file=cat_pic_name,
+                reddit_url=cat_picture.reddit_url,
+            ),
             image_name=cat_pic_name,
             image_content=response.content,
             image_content_type=response.headers["Content-Type"],

@@ -1,0 +1,68 @@
+<!doctype html>
+
+<html>
+<!-- According to lots of random internet people, tables are the way to go here, and what do I know..
+* https://templates.mailchimp.com/getting-started/html-email-basics/
+* https://www.emailonacid.com/blog/article/email-development/email-development-best-practices-2/
+* https://templates.mailchimp.com/development/css/client-specific-styles/
+-->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ cat_name }}</title>
+    <style type="text/css">
+        @media only screen and (max-width: 640px)  {
+            .deviceWidth { width: 440px !important; padding: 0; }
+        }
+
+
+        @media only screen and (max-width: 479px) {
+            .deviceWidth { width: 280px !important; padding: 0; }
+        }
+
+        body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            mso-line-height-rule: exactly;
+            -webkit-font-smoothing: antialiased;
+            -ms-text-size-adjust: none !important;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        table td {
+            border-collapse: collapse;
+        }
+
+        img {
+            border: 0;
+            display: block;
+            margin: auto;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        h1, p {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" >
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" >
+        <tr>
+            <td width="100%" valign="top" >
+                <h1>{{ cat_name }}</h1>
+                <img src="cid:{{ image_file }}">
+                <p>Credit: <a href="{{ reddit_url }}">{{ reddit_url }}</a></p>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

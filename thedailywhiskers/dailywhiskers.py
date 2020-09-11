@@ -94,6 +94,7 @@ last_names = [
     "the salmon shredder",
     "the vomiter",
 ]
+ideal_image_resolution = 640
 
 MailgunConfig = namedtuple("MailgunConfig", ["url", "api_key", "from_address"])
 CatPicture = namedtuple("CatPicture", ["url", "reddit_url"])
@@ -158,13 +159,17 @@ def get_cat_picture(json_child):
 
         if "preview" in data:
             logger.debug("Found single preview image")
-            # 1 because 0 is very low res.
-            url = data["preview"]["images"][0]["resolutions"][1]["url"]
+            resolutions = data["preview"]["images"][0]["resolutions"]
+            url = sorted(
+                resolutions, key=lambda img: abs(img["width"] - ideal_image_resolution)
+            )[0]["url"]
         elif "gallery_data" in data:
             logger.debug("Found preview image gallery")
             first_media_id = data["gallery_data"]["items"][0]["media_id"]
-            # Number 3 looks like a reasonable resolution?  I'm not sure how these resolutions are chosen!
-            url = data["media_metadata"][first_media_id]["p"][3]["u"]
+            resolutions = data["media_metadata"][first_media_id]["p"]
+            url = sorted(
+                resolutions, key=lambda img: abs(img["x"] - ideal_image_resolution)
+            )[0]["u"]
         else:
             raise ValueError("Not sure how to extract image from this JSON")
 
